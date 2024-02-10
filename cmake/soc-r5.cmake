@@ -1,3 +1,7 @@
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 if (NOT DEFINED ENV{CORE})
     message(WARNING "Core not defined.")
 endif()
@@ -33,32 +37,19 @@ set(SUPPRESS_WARNING_FLAGS "-Wno-extra -Wno-exceptions -ferror-limit=100 \
 set(CPU_FLAGS "-mfloat-abi=hard -mfpu=vfpv3-d16 \
     -mcpu=cortex-r5 -march=armv7-r -fno-strict-aliasing" CACHE STRING "" FORCE)
 
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    set(CPU_FLAGS "${CPU_FLAGS} -Oz")
+else()
+    set(CPU_FLAGS  "${CPU_FLAGS} -O0 -g")
+endif()
+
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${SUPPRESS_WARNING_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SUPPRESS_WARNING_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
 
-add_link_options("-Wl,--use_memcpy=fast -Wl,--use_memset=fast \
-                    -Wl,--diag_suppress=10063-D -Wl,--diag_suppress=10068-D -Wl,--zero_init=on -Wl,--rom_model")
-
-
-# if ("${CORE}" STREQUAL "R5")
-#     set(CROSS_COMPILER_PATH $(TI_SDK_PATH)/ti-cgt-armllvm_3.2.0.LTS)
-#     set(CROSS_COMPILER_PREFIX tiarm)
-#     set(TARGETFS $(TI_SDK_PATH)/ti-cgt-armllvm_3.2.0.LTS)
-# endif()
-
-# if ("${CORE}" STREQUAL "C7x")
-#     set(CROSS_COMPILER_PATH $(TI_SDK_PATH)/ti-cgt-c7000_3.1.0.LTS)
-#     set(CROSS_COMPILER_PREFIX tiarm)
-#     set(TARGETFS $(TI_SDK_PATH)/ti-cgt-armllvm_3.2.0.LTS)
-# endif()
-
-# if (DEFINED ${CROSS_COMPILER_PATH})
-#     set(TOOLCHAIN_COMPILER_PATH ${CROSS_COMPILER_PATH})
-#     set(CMAKE_AR                ${TOOLCHAIN_PREFIX}ar CACHE FILEPATH "")
-#     set(CMAKE_RANLIB            ${TOOLCHAIN_PREFIX}ranlib CACHE FILEPATH "")
-#     set(CMAKE_SIZE              ${TOOLCHAIN_PREFIX}size)
-#     set(CMAKE_STRIP             ${TOOLCHAIN_PREFIX}strip)
+add_link_options(-Wl,--use_memcpy=fast -Wl,--use_memset=fast
+                -Wl,--diag_suppress=10063-D -Wl,--diag_suppress=10068-D
+                -Wl,--zero_init=on -Wl,--rom_model)
 
 if (DEFINED ENV{SOC_TARGET_FS})
     set(CMAKE_SYSROOT           $ENV{SOC_TARGET_FS})

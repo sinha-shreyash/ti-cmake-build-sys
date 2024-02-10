@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(main)
-
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release)
-endif()
+project(add2Nos)
 
 if (NOT DEFINED ENV{SOC})
     message(WARNING "SOC not defined.")
@@ -14,12 +10,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+link_directories(${CMAKE_SOURCE_DIR}/lib)
+
 add_library($ENV{SOC}-$ENV{CORE} STATIC ${CMAKE_SOURCE_DIR}/src/add.c)
+add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/test/main.c)
 
-add_executable(main ${CMAKE_SOURCE_DIR}/test/main.c)
-target_link_libraries(main $ENV{SOC}-$ENV{CORE})
+target_link_libraries(${PROJECT_NAME} $ENV{SOC}-$ENV{CORE})
 
-set_target_properties($ENV{SOC}-$ENV{CORE} PROPERTIES PUBLIC_HEADER "add.h")
+set_target_properties($ENV{SOC}-$ENV{CORE} PROPERTIES PUBLIC_HEADER "add.h" RUNTIME ${PROJECT_NAME})
 
 install(TARGETS $ENV{SOC}-$ENV{CORE} LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
         PUBLIC_HEADER DESTINATION include)

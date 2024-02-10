@@ -1,3 +1,7 @@
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 if (NOT DEFINED ENV{CORE})
     message(WARNING "Core not defined.")
 endif()
@@ -49,6 +53,12 @@ include_directories(${CROSS_COMPILER_PATH}/include)
 link_directories(${CROSS_COMPILER_PATH}/lib)
 
 set(CPU_FLAGS "--abi=eabi --gcc --gen_func_subsections" CACHE STRING "" FORCE)
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+    set(CPU_FLAGS "${CPU_FLAGS} --opt_level=3 --gen_opt_info=2 -DNDEBUG")
+else()
+    set(CPU_FLAGS  "${CPU_FLAGS} -g -D_DEBUG_=1")
+endif()
 
 set(CMAKE_C_FLAGS   "${COMPILE_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS "${COMPILE_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
