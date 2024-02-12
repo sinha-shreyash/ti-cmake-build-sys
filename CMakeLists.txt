@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.22)
 project(add2Nos)
 
+if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set (CMAKE_TOOLCHAIN_FILE $ENV{CMAKE_TOOLCHAIN_FILE})
+
 if (NOT DEFINED ENV{SOC})
     message(WARNING "SOC not defined.")
 endif()

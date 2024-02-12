@@ -1,7 +1,3 @@
-if(NOT DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif()
-
 if (NOT DEFINED ENV{CORE})
     message(FATAL_ERROR "Core not defined.")
 endif()
