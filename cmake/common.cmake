@@ -3,28 +3,45 @@ include(GNUInstallDirs)
 file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/bin/
                     ${CMAKE_SOURCE_DIR}/lib/)
 
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE}/${CORE}
-                    ${CMAKE_SOURCE_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE}/${CORE})
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE}
+                    ${CMAKE_SOURCE_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
 
 if(NOT CMAKE_OUTPUT_DIR)
   set(CMAKE_OUTPUT_DIR ${CMAKE_SOURCE_DIR})
 endif()
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE}/${CORE})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE}/${CORE})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE}/${CORE})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE})
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "Installation Prefix" FORCE)
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/include
-                    ${CGT7X_ROOT}/include
-                    ${CGT6X_ROOT}/include)
+if(${CORE} MATCHES linux OR ${CORE} MATCHES R5F)
 
-link_directories( ${CMAKE_SOURCE_DIR}/lib
-                  ${CGT7X_ROOT}/lib
-                  ${CGT6X_ROOT}/lib)
+  include_directories(${TOP_CMAKE_DIR}/include)
+
+  link_directories (${TOP_CMAKE_DIR}/lib)
+
+elseif(${CORE} MATCHES C7X)
+
+  include_directories(${TOP_CMAKE_DIR}/include
+                      ${CGT7X_ROOT}/include)
+
+  link_directories (${TOP_CMAKE_DIR}/lib
+                    ${CGT7X_ROOT}/lib)
+
+elseif(${CORE} MATCHES C6X)
+
+  include_directories(${TOP_CMAKE_DIR}/include
+                      ${CGT6X_ROOT}/include)
+
+  link_directories( ${TOP_CMAKE_DIR}/lib
+                    ${CGT6X_ROOT}/lib)
+
+else()
+endif()
 
 function(build_app app_name lib_name)
     add_executable(${app_name} ${ARGN})

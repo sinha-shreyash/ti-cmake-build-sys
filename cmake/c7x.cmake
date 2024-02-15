@@ -1,11 +1,12 @@
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH TOP_CMAKE_DIR)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR};${TOP_CMAKE_DIR}/cmake")
 include(tool_paths)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CORE C7x)
+set(CORE C7X)
 
 if ($ENV{SOC} MATCHES j721e)
     set(CMAKE_SYSTEM_NAME           Generic)
