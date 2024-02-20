@@ -3,6 +3,6 @@ if [ -z "${SOC}" ]; then
     exit 1
 fi
 
-mkdir -p build linux/build mcu/build c7x/build c6x/build
+mkdir -p build linux_build/build mcu_build/build c7x_build/build c6x_build/build
 cd build
 cmake .. && make -j$(nproc)
