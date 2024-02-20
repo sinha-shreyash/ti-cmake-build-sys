@@ -1,0 +1,66 @@
+cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH TOP_CMAKE_DIR)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR};${TOP_CMAKE_DIR}/cmake")
+include(tool_paths)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CORE c7x)
+
+if ($ENV{SOC} MATCHES j721e)
+    set(CMAKE_SYSTEM_NAME           Generic)
+    set(CROSS_COMPILER_POSTFIX      7x)
+    set(CMAKE_C_COMPILER            ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_CXX_COMPILER          ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_LINKER                ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_AR                    ${CGT7X_ROOT}/bin/ar${CROSS_COMPILER_POSTFIX})
+    set(COMPILE_FLAGS               "--silicon_version=7100 --silicon_errata_i2117")
+    set(AR_FLAGS                    "--silicon_version=7100")
+
+elseif($ENV{SOC} MATCHES j721s2 OR $ENV{SOC} MATCHES j784s4)
+    set(CMAKE_SYSTEM_NAME           Generic)
+    set(CROSS_COMPILER_POSTFIX      7x)
+    set(CMAKE_C_COMPILER            ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_CXX_COMPILER          ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_LINKER                ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_AR                    ${CGT7X_ROOT}/bin/ar${CROSS_COMPILER_POSTFIX})
+    set(COMPILE_FLAGS               "--silicon_version=7120")
+    set(AR_FLAGS                    "--silicon_version=7120")
+
+elseif($ENV{SOC} MATCHES am62a)
+    set(CMAKE_SYSTEM_NAME           Generic)
+    set(CROSS_COMPILER_POSTFIX      7x)
+    set(CMAKE_C_COMPILER            ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_CXX_COMPILER          ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_LINKER                ${CGT7X_ROOT}/bin/cl${CROSS_COMPILER_POSTFIX})
+    set(CMAKE_AR                    ${CGT7X_ROOT}/bin/ar${CROSS_COMPILER_POSTFIX})
+    set(COMPILE_FLAGS               "--silicon_version=7504")
+    set(AR_FLAGS                    "--silicon_version=7504")
+else()
+    message(WARNING "CGT7X_ROOT not defined, Using default TOOLCHAIN")
+endif()
+
+set(CMAKE_C_COMPILER_WORKS 1)
+set(CMAKE_CXX_COMPILER_WORKS 1)
+
+set(CPU_FLAGS "--abi=eabi --gcc --gen_func_subsections" CACHE STRING "" FORCE)
+
+if (${CMAKE_BUILD_TYPE} MATCHES Release)
+    set(CPU_FLAGS "${CPU_FLAGS} --opt_level=3 --gen_opt_info=2 -DNDEBUG")
+else()
+    set(CPU_FLAGS  "${CPU_FLAGS} -g -D_DEBUG_=1")
+endif()
+
+set(CMAKE_C_FLAGS   "${COMPILE_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
+set(CMAKE_CXX_FLAGS "${COMPILE_FLAGS} ${CPU_FLAGS}" CACHE STRING "" FORCE)
+
+set(CMAKE_STATIC_LINKER_FLAGS "${AR_FLAGS}" CACHE STRING "" FORCE)
+
+add_link_options(--issue_remarks --warn_sections --reread_libs --rom_model)
+
+if (DEFINED CGT7X_ROOT)
+    set(CMAKE_SYSROOT           ${CGT7X_ROOT})
+else()
+    message(WARNING "TARGET_FS not defined, Using /")
+endif()

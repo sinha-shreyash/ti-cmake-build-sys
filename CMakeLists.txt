@@ -1,30 +1,49 @@
 cmake_minimum_required(VERSION 3.22)
-project(add2Nos)
+project(cmake_master)
 
-if(NOT DEFINED ENV{CMAKE_BUILD_TYPE})
-    set(CMAKE_BUILD_TYPE Release)
+include(cmake/build_flags.cmake)
+include(ExternalProject)
+
+if (BUILD_CPU MATCHES yes)
+    ExternalProject_Add(linux
+            SOURCE_DIR  ${CMAKE_SOURCE_DIR}/linux_build
+            BINARY_DIR  ${CMAKE_SOURCE_DIR}/linux_build/build
+            CMAKE_ARGS  -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/linux.cmake
+                        -DCMAKE_BUILD_TYPE=Release
+            BUILD_ALWAYS    1
+            INSTALL_COMMAND ""
+    )
 endif()
 
-set (CMAKE_TOOLCHAIN_FILE $ENV{CMAKE_TOOLCHAIN_FILE})
-
-if (NOT DEFINED ENV{SOC})
-    message(WARNING "SOC not defined.")
+if(BUILD_MCU MATCHES yes)
+    ExternalProject_Add(mcu
+            SOURCE_DIR  ${CMAKE_SOURCE_DIR}/mcu_build
+            BINARY_DIR  ${CMAKE_SOURCE_DIR}/mcu_build/build
+            CMAKE_ARGS  -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/r5f.cmake
+                        -DCMAKE_BUILD_TYPE=Release
+            BUILD_ALWAYS    1
+            INSTALL_COMMAND ""
+    )
 endif()
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${CMAKE_BUILD_TYPE})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
+if(BUILD_C7X MATCHES yes)
+    ExternalProject_Add(c7x
+            SOURCE_DIR  ${CMAKE_SOURCE_DIR}/c7x_build
+            BINARY_DIR  ${CMAKE_SOURCE_DIR}/c7x_build/build
+            CMAKE_ARGS  -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/c7x.cmake
+                        -DCMAKE_BUILD_TYPE=Release
+            BUILD_ALWAYS    1
+            INSTALL_COMMAND ""
+    )
+endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
-link_directories(${CMAKE_SOURCE_DIR}/lib)
-
-add_library($ENV{SOC}-$ENV{CORE} STATIC ${CMAKE_SOURCE_DIR}/src/add.c)
-add_executable(${PROJECT_NAME} ${CMAKE_SOURCE_DIR}/test/main.c)
-
-target_link_libraries(${PROJECT_NAME} $ENV{SOC}-$ENV{CORE})
-
-set_target_properties($ENV{SOC}-$ENV{CORE} PROPERTIES PUBLIC_HEADER "add.h" RUNTIME ${PROJECT_NAME})
-
-install(TARGETS $ENV{SOC}-$ENV{CORE} LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
-        PUBLIC_HEADER DESTINATION include)
+if(BUILD_C6X MATCHES yes)
+    ExternalProject_Add(c6x
+            SOURCE_DIR  ${CMAKE_SOURCE_DIR}/c6x_build
+            BINARY_DIR  ${CMAKE_SOURCE_DIR}/c6x_build/build
+            CMAKE_ARGS  -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/c6x.cmake
+                        -DCMAKE_BUILD_TYPE=Release
+            BUILD_ALWAYS    1
+            INSTALL_COMMAND ""
+    )
+endif()
