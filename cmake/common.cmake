@@ -1,30 +1,30 @@
 include(GNUInstallDirs)
 
-file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/bin/
-                    ${CMAKE_SOURCE_DIR}/lib/)
+file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/build/)
+file(REMOVE_RECURSE ${TOP_CMAKE_DIR}/$ENV{SOC}/${CORE})
 
-file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE}
-                    ${CMAKE_SOURCE_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
+file(MAKE_DIRECTORY ${TOP_CMAKE_DIR}/$ENV{SOC}/${CORE}/bin/${CMAKE_BUILD_TYPE}
+                    ${TOP_CMAKE_DIR}/$ENV{SOC}/${CORE}/lib/${CMAKE_BUILD_TYPE})
 
 if(NOT CMAKE_OUTPUT_DIR)
-  set(CMAKE_OUTPUT_DIR ${CMAKE_SOURCE_DIR})
+  set(CMAKE_OUTPUT_DIR ${TOP_CMAKE_DIR}/$ENV{SOC}/${CORE})
 endif()
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/$ENV{SOC}/${CMAKE_BUILD_TYPE})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/bin/$ENV{SOC}/${CMAKE_BUILD_TYPE})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/${CMAKE_BUILD_TYPE})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/lib/${CMAKE_BUILD_TYPE})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/bin/${CMAKE_BUILD_TYPE})
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "Installation Prefix" FORCE)
 endif()
 
-if(${CORE} MATCHES linux OR ${CORE} MATCHES R5F)
+if((${CORE} MATCHES a72 OR ${CORE} MATCHES a53) OR ${CORE} MATCHES r5f)
 
   include_directories(${TOP_CMAKE_DIR}/include)
 
   link_directories (${TOP_CMAKE_DIR}/lib)
 
-elseif(${CORE} MATCHES C7X)
+elseif(${CORE} MATCHES c7x)
 
   include_directories(${TOP_CMAKE_DIR}/include
                       ${CGT7X_ROOT}/include)
@@ -32,7 +32,7 @@ elseif(${CORE} MATCHES C7X)
   link_directories (${TOP_CMAKE_DIR}/lib
                     ${CGT7X_ROOT}/lib)
 
-elseif(${CORE} MATCHES C6X)
+elseif(${CORE} MATCHES c6x)
 
   include_directories(${TOP_CMAKE_DIR}/include
                       ${CGT6X_ROOT}/include)

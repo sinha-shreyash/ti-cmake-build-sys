@@ -1,12 +1,13 @@
 cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH TOP_CMAKE_DIR)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR};${TOP_CMAKE_DIR}/cmake")
 include(tool_paths)
+include(build_flags)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CORE                    linux)
+set(CORE                    ${MPU_CPU})
 set(CMAKE_SYSTEM_NAME       Linux)
 set(CMAKE_SYSTEM_PROCESSOR  aarch64)
 set(CROSS_COMPILER_PREFIX   aarch64-none-linux-gnu-)
